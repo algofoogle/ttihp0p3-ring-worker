@@ -40,7 +40,7 @@ module tt_um_algofoogle_ro_worker (
     .osc_out(ring_clock)
   );
 
-  wire internal_clock_unbuffered = ring_clock; //clock_sel ? ring_clock : clk;
+  wire internal_clock_unbuffered = clock_sel ? ring_clock : clk;
   wire internal_clock;
   (* keep_hierarchy *) sg13g2_buf_16 intclkbuff (.A(internal_clock_unbuffered), .X(internal_clock));
 
@@ -58,6 +58,25 @@ module tt_um_algofoogle_ro_worker (
   wire _unused = &{rst_n, ui_in, uio_in[7:3], 1'b0};
 
 endmodule
+
+
+// module edge_sync(
+//   input wire clk,
+//   input wire rst,
+//   input wire src,
+//   output wire rising,
+//   output wire falling
+// );
+//   reg [3:0] buff;
+//   always @(posedge clk) begin
+//     if (rst)
+//       buff <= {buff[2:0], src};
+//     else
+//       buff <= 0;
+//   end
+//   assign rising = 4'b0111;
+//   assign falling = 4'b1000;
+// endmodule
 
 
 module amm_inverter (
