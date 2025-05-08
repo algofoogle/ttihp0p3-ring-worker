@@ -1,8 +1,8 @@
-# Declare internal_clock as a primary clock at ~300 MHz.
+# Declare internal_clock as a primary clock at ~250 MHz.
 # Note that it is normally derived from a ring oscillator,
 # but could also come from a mux that selects the Tiny Tapeout "clk" input instead,
 # but we don't care about that for our constraints.
-create_clock -name internal_clk -period 3.333 [get_nets internal_clock]
+create_clock -name internal_clk -period 4.0 [get_pins tt_um_algofoogle_ro_worker/intclkbuff/X]
 
 # Set clock uncertainty and transition estimates:
 set_clock_uncertainty 0.5 [get_clocks internal_clk]
