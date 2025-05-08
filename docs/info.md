@@ -9,7 +9,8 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## How it works
 
-Explain how your project works
+An internal simple digital counter block can be driven by an external clock or an internal ring oscillator, and then be fed data through external pins. It will run as fast as it can to try and produce a result, which can then be read back out.
+
 
 ## How to test
 
@@ -23,4 +24,5 @@ Explain how your project works
 
 ## External hardware
 
-List external hardware used in your project (e.g. PMOD, LED display, etc), if any
+Nothing special. Probably just an oscilloscope to see how fast it actually yields a result.
+
