@@ -63,11 +63,11 @@ module amm_inverter (
   output  wire y
 );
   // See: https://github.com/IHP-GmbH/IHP-Open-PDK/blob/68eebafcd9b2f5e92c69d37a8d3d90eb266550f5/ihp-sg13g2/libs.ref/sg13g2_stdcell/verilog/sg13g2_stdcell.v#L870
-  // (* keep_hierarchy *) sg13g2_inv_1   inverter (
-  //     .A  (a),
-  //     .Y  (y)
-  // );
-  assign y = ~a;
+  (* keep_hierarchy *) sg13g2_inv_1   inverter (
+      .A  (a),
+      .Y  (y)
+  );
+  // assign y = ~a;
 endmodule
 
 
