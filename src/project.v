@@ -16,14 +16,20 @@ module tt_um_algofoogle_ro_worker (
   input  wire       rst_n     // reset_n - low to reset
 );
 
-  // All output pins must be assigned. If not used, assign to 0.
-  assign uo_out  = ui_in + uio_in;  // Example: ou_out is the sum of ui_in and uio_in
-  assign uio_out = 0;
-  assign uio_oe  = 8'b11000000;
+  reg done;
+  wire reset = ~rst_n;
 
-  wire shift = uio_in[0];
-  wire clock_sel = uio_in[1];
-  wire mode = uio_in[2];
+  reg [3:0] clock_div;
+
+  // All output pins must be assigned. If not used, assign to 0.
+  assign uio_out[5:0] = 0; // Unused.
+  assign uio_out[6]   = done;
+  assign uio_out[7]   = clock_div[3];
+  assign uio_oe       = 8'b11000000;
+
+  wire shift          = uio_in[0];
+  wire clock_sel      = uio_in[1];
+  wire mode           = uio_in[2];
 
   wire ring_clock;
 
@@ -34,15 +40,14 @@ module tt_um_algofoogle_ro_worker (
 
   wire internal_clock = clock_sel ? ring_clock : clk;
 
-  wire reset = ~rst_n;
-
-  reg [3:0] clock_div;
-
-  assign uio_out[7] = clock_div[3];
-
+  // Clock div counts on internal_clock, unless reset is asserted:
   always @(posedge internal_clock) begin
-    if (reset)
-      clock_div <= clock_div + 1;
+    clock_div <= reset ? 0 : clock_div + 1;
+  end
+
+  // Reset logic for 'done' flag:
+  always @(posedge internal_clock) begin
+    if (reset) done <= 0;
   end
 
   // List all unused inputs to prevent warnings
@@ -60,8 +65,7 @@ module amm_inverter (
   //     .A  (a),
   //     .Y  (y)
   // );
-  (* keep_hierarchy *) assign y = ~a;
-
+  assign y = ~a;
 endmodule
 
 
