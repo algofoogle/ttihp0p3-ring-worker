@@ -40,7 +40,7 @@ module tt_um_algofoogle_ro_worker (
     .osc_out(ring_clock)
   );
 
-  wire internal_clock = clock_sel ? ring_clock : clk;
+  wire internal_clock = ring_clock; //clock_sel ? ring_clock : clk;
 
   // Clock div counts on internal_clock, unless reset is asserted:
   always @(posedge internal_clock) begin
