@@ -27,6 +27,8 @@ module tt_um_algofoogle_ro_worker (
   assign uio_out[7]   = clock_div[3];
   assign uio_oe       = 8'b11000000;
 
+  assign uo_out       = 0;
+
   wire shift          = uio_in[0];
   wire clock_sel      = uio_in[1];
   wire mode           = uio_in[2];
@@ -51,7 +53,7 @@ module tt_um_algofoogle_ro_worker (
   end
 
   // List all unused inputs to prevent warnings
-  wire _unused = &{rst_n, 1'b0};
+  wire _unused = &{rst_n, ui_in, uio_in[7:3], 1'b0};
 
 endmodule
 
