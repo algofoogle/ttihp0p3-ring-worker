@@ -30,7 +30,7 @@
   "//": "If you need a custom clock configuration, read the following documentation first:",
   "//": "https://tinytapeout.com/faq/#how-can-i-map-an-additional-external-clock-to-one-of-the-gpios",
   "CLOCK_PORT": "clk",
-  "BASE_SDC_FILE": "$::env(DESIGN_DIR)/project.sdc",
+  "BASE_SDC_FILE": "src/project.sdc",
 
   "//": "Configuration docs: https://openlane.readthedocs.io/en/latest/reference/configuration.html",
 
