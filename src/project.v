@@ -32,6 +32,7 @@ module tt_um_algofoogle_ro_worker (
   wire shift          = uio_in[0];
   wire clock_sel      = uio_in[1];
   wire mode           = uio_in[2];
+  wire stop           = uio_in[3];
 
   wire [7:0] din      = ui_in;
 
@@ -62,6 +63,7 @@ module tt_um_algofoogle_ro_worker (
   reg [1:0] shift_counter;
 
   wire shift_rising;
+  wire stop_rising;
 
   reg [15:0] da;
   reg [15:0] db;
@@ -72,6 +74,7 @@ module tt_um_algofoogle_ro_worker (
   reg run;
 
   edge_sync shiftedge (.clk(internal_clock), .rst(reset), .src(shift), .rising(shift_rising));
+  edge_sync stopedge  (.clk(internal_clock), .rst(reset), .src(stop),  .rising(stop_rising));
 
   always @(posedge internal_clock) begin
     if (reset) begin
@@ -81,14 +84,15 @@ module tt_um_algofoogle_ro_worker (
       da <= 0;
       db <= 0;
     end else if (shift_rising) begin
+      done <= 0;
       shift_counter <= shift_counter + 1;
       {da,db} <= {da[7:0],db,din}; // Shift in a byte.
       if (!run) begin
-        {ca,cb} <= {ca[7:0],cb,ca[15:8]}; // Shift out a byte (rotate).
+        {ca,cb} <= {ca[7:0],cb,ca[15:8]}; // Rotate out a byte.
       end
       if (shift_counter == 3) begin
         run <= 1; // Start worker after shifting in last byte.
-        ca <= da;
+        ca <= (mode==0) ? da : da + db;
         cb <= 0;
       end
     end
@@ -100,13 +104,17 @@ module tt_um_algofoogle_ro_worker (
     if (run) begin
       ca <= ca + 1;
       cb <= cb + 1;
-      if (cb == db) begin
-        run <= 0; // Stop.
+      if (mode == 0) begin
+        if (cb == db) begin
+          run <= 0; // Stop.
+          done <= 1;
+        end
+      end else if (stop_rising) begin
+        run <= 0;
         done <= 1;
       end
     end
   end
-
 
   // List all unused inputs to prevent warnings
   wire _unused = &{rst_n, ui_in, uio_in[7:3], 1'b0};
@@ -128,8 +136,8 @@ module edge_sync(
     else
       buff <= 0;
   end
-  assign rising = 4'b0111;
-  assign falling = 4'b1000;
+  assign rising = (buff == 4'b0111);
+  assign falling = (buff == 4'b1000);
 endmodule
 
 

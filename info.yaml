@@ -45,8 +45,8 @@ pinout:
   # Bidirectional pins
   uio[0]: "shift"       # IN: After reset, each rising edge shifts in a byte and shifts out a byte
   uio[1]: "clock_sel"   # IN: Internal clock source select: 0=TT clk pin, 1=internal ring oscillator
-  uio[2]: "mode"        # IN: Sampled as last byte is shifted in: 0=limited cycles; 1=stop on falling edge
-  uio[3]: ""
+  uio[2]: "mode"        # IN: Sampled as last byte is shifted in: 0=limited cycles; 1=stop on falling edge of 'stop'
+  uio[3]: "stop"        # IN: Used with mode==1: stop the worker.
   uio[4]: ""
   uio[5]: ""
   uio[6]: "done"        # OUT: Goes high when result can be shifted back out.
