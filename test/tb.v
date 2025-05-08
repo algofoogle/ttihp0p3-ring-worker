@@ -17,11 +17,20 @@ module tb ();
   reg clk;
   reg rst_n;
   reg ena;
-  reg [7:0] ui_in;
-  reg [7:0] uio_in;
+  reg [7:0] din;
+  reg stop;
+  reg mode;
+  reg clock_sel;
+  reg shift;
+  wire [7:0] ui_in = din;
+  wire [7:0] uio_in = {4'b0000,stop,mode,clock_sel,shift};
   wire [7:0] uo_out;
   wire [7:0] uio_out;
   wire [7:0] uio_oe;
+  wire running = uio_out[5];
+  wire done = uio_out[6];
+  wire cdebug = uio_out[7];
+  wire [7:0] dout = uo_out;
 
   tt_um_algofoogle_ro_worker user_project (
       .ui_in  (ui_in),    // Dedicated inputs

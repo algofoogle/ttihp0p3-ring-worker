@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2024 Tiny Tapeout
+# SPDX-FileCopyrightText: © 2025 Anton Maurovic
 # SPDX-License-Identifier: Apache-2.0
 
 import cocotb
@@ -14,8 +14,20 @@ async def test_project(dut):
     clock = Clock(dut.clk, 100, units="ns")
     cocotb.start_soon(clock.start())
 
-    # # Reset
-    # dut._log.info("Reset")
+    dut.clock_sel.value = 0   # Use TT clk pin.
+    dut.shift.value = 0
+    dut.mode.value = 0
+    dut.stop.value = 0
+    # Reset
+    dut._log.info("Reset")
+    dut.rst_n.value = 0
+    await ClockCycles(dut.clk, 10)
+    assert dut.done == 0
+    assert dut.running == 0
+    assert dut.dout == 0
+    dut.rst_n.value = 1
+
+
     # dut.ui_in.value = 0
     # dut.uio_in.value = 0
     # dut.rst_n.value = 0

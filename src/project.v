@@ -5,6 +5,19 @@
 
 `default_nettype none
 
+module sync (
+  input clk,
+  input in,
+  output out
+);
+  reg [1:0] buff;
+  always @(posedge clk) begin
+    buff <= {buff[0], in};
+  end
+  assign out = buff[1];
+endmodule
+
+
 module tt_um_algofoogle_ro_worker (
   input  wire [7:0] ui_in,    // Dedicated inputs
   output wire [7:0] uo_out,   // Dedicated outputs
@@ -17,14 +30,13 @@ module tt_um_algofoogle_ro_worker (
 );
 
   reg done;
-  wire reset = ~rst_n;
 
   reg [3:0] clock_div;
 
   reg run; // Used to signal whether the worker is running (hence modifying ca and cb).
 
   // All output pins must be assigned. If not used, assign to 0.
-  assign uio_out[5:0] = 0; // Unused.
+  assign uio_out[4:0] = 0; // Unused.
   assign uio_out[5]   = run;
   assign uio_out[6]   = done;
   assign uio_out[7]   = clock_div[3]; // cdebug.
@@ -52,6 +64,9 @@ module tt_um_algofoogle_ro_worker (
   wire internal_clock;
   // Clock buffer, to help CTS/SDC find the 'internal_clock' source pin:
   (* keep_hierarchy *) sg13g2_buf_16 intclkbuff (.A(internal_clock_unbuffered), .X(internal_clock));
+
+  wire reset;
+  sync resetsync (.clk(internal_clock), .in(~rst_n), .out(reset));
 
   // Clock div counts on internal_clock, unless reset is asserted.
   // This produces a div-16 output frequency derived from internal_clock:
