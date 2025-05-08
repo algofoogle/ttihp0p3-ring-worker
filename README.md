@@ -1,6 +1,8 @@
 ![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg) ![](../../workflows/fpga/badge.svg)
 
-# Tiny Tapeout Verilog Project Template
+# TTIHP0p3 - Ring oscillator worker experiment
+
+This is a simple experiment to see if we can make a device that can process basic data/logic really fast, when driven by an internal ring oscillator.
 
 - [Read the documentation for project](docs/info.md)
 
