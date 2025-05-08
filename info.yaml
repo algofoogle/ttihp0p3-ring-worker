@@ -48,7 +48,7 @@ pinout:
   uio[2]: "mode"        # IN: Sampled as last byte is shifted in: 0=limited cycles; 1=stop on falling edge of 'stop'
   uio[3]: "stop"        # IN: Used with mode==1: stop the worker.
   uio[4]: ""
-  uio[5]: ""
+  uio[5]: "running"     # OUT: Whether the worker is running.
   uio[6]: "done"        # OUT: Goes high when result can be shifted back out.
   uio[7]: "cdebug"      # OUT: Clock debug; internal clock source divided by 16.
 

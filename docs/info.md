@@ -19,7 +19,7 @@ An internal simple digital counter block can be driven by an external clock or a
 3.  Assert reset. No need to supply a clock on `clk`. Expect `done==0`. 
 4.  Load a sequence of 4 bytes: a rising edge on `shift` loads each byte, in turn, via `din[7:0]`. First 2 bytes are a starting value (MSB first). The next 2 bytes are a cycle count. In `mode==0` this cycle count is used, while in `mode==1` it is repurposed as the addend for an adder experiment.
 5.  After the 4th byte has been loaded, the worker should start, and set `done==1` when it finishes.
-6.  Shift out 4 bytes via `dout[7:0]` by raising `shift` each time again (which in turn loads 4 more bytes, so it will start again). The first 2 bytes out are the internal counter value (which started at 0) and the last 2 bytes are the 'starting value' incremented by the counter value (i.e. it should be the starting value, plus the internal counter value).
+6.  When done, `dout[7:0]` should be presenting the first byte (MSB) of the output data; shift out 4 bytes in total via `dout[7:0]` by raising `shift` each time again (which in turn loads 4 more bytes, so it will start again). The first 2 bytes out are the 'starting value' incremented by the counter value (i.e. it should be the starting value, plus the internal counter value), and the last 2 bytes are the internal counter value (which started at 0).
 
 
 ## External hardware
