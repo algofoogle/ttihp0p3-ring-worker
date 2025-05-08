@@ -24,7 +24,7 @@ module tt_um_algofoogle_ro_worker (
   // All output pins must be assigned. If not used, assign to 0.
   assign uio_out[5:0] = 0; // Unused.
   assign uio_out[6]   = done;
-  assign uio_out[7]   = clock_div[3];
+  assign uio_out[7]   = clock_div[3]; // cdebug.
   assign uio_oe       = 8'b11000000;
 
   assign uo_out       = 0;
@@ -32,6 +32,8 @@ module tt_um_algofoogle_ro_worker (
   wire shift          = uio_in[0];
   wire clock_sel      = uio_in[1];
   wire mode           = uio_in[2];
+
+  wire [7:0] din      = ui_in;
 
   wire ring_clock;
 
@@ -51,8 +53,60 @@ module tt_um_algofoogle_ro_worker (
 
   // Reset logic for 'done' flag:
   always @(posedge internal_clock) begin
-    if (reset) done <= 0;
+    if (reset) begin
+      done <= 0;
+      run <= 0;
+    end
   end
+
+  reg [1:0] shift_counter;
+
+  wire shift_rising;
+
+  reg [15:0] da;
+  reg [15:0] db;
+
+  reg [15:0] ca;
+  reg [15:0] cb;
+
+  reg run;
+
+  edge_sync shiftedge (.clk(internal_clock), .rst(reset), .src(shift), .rising(shift_rising));
+
+  always @(posedge internal_clock) begin
+    if (reset) begin
+      shift_counter <= 0;
+      ca <= 0;
+      cb <= 0;
+      da <= 0;
+      db <= 0;
+    end else if (shift_rising) begin
+      shift_counter <= shift_counter + 1;
+      {da,db} <= {da[7:0],db,din}; // Shift in a byte.
+      if (!run) begin
+        {ca,cb} <= {ca[7:0],cb,ca[15:8]}; // Shift out a byte (rotate).
+      end
+      if (shift_counter == 3) begin
+        run <= 1; // Start worker after shifting in last byte.
+        ca <= da;
+        cb <= 0;
+      end
+    end
+  end
+
+  assign uo_out = ca[15:8];
+
+  always @(posedge internal_clock) begin
+    if (run) begin
+      ca <= ca + 1;
+      cb <= cb + 1;
+      if (cb == db) begin
+        run <= 0; // Stop.
+        done <= 1;
+      end
+    end
+  end
+
 
   // List all unused inputs to prevent warnings
   wire _unused = &{rst_n, ui_in, uio_in[7:3], 1'b0};
@@ -60,23 +114,23 @@ module tt_um_algofoogle_ro_worker (
 endmodule
 
 
-// module edge_sync(
-//   input wire clk,
-//   input wire rst,
-//   input wire src,
-//   output wire rising,
-//   output wire falling
-// );
-//   reg [3:0] buff;
-//   always @(posedge clk) begin
-//     if (rst)
-//       buff <= {buff[2:0], src};
-//     else
-//       buff <= 0;
-//   end
-//   assign rising = 4'b0111;
-//   assign falling = 4'b1000;
-// endmodule
+module edge_sync(
+  input wire clk,
+  input wire rst,
+  input wire src,
+  output wire rising,
+  output wire falling
+);
+  reg [3:0] buff;
+  always @(posedge clk) begin
+    if (rst)
+      buff <= {buff[2:0], src};
+    else
+      buff <= 0;
+  end
+  assign rising = 4'b0111;
+  assign falling = 4'b1000;
+endmodule
 
 
 module amm_inverter (
