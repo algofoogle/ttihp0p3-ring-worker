@@ -40,7 +40,9 @@ module tt_um_algofoogle_ro_worker (
     .osc_out(ring_clock)
   );
 
-  wire internal_clock = ring_clock; //clock_sel ? ring_clock : clk;
+  wire internal_clock_unbuffered = ring_clock; //clock_sel ? ring_clock : clk;
+  wire internal_clock;
+  (* keep_hierarchy *) sg13g2_buf_16 intclkbuff (.A(internal_clock_unbuffered), .X(internal_clock));
 
   // Clock div counts on internal_clock, unless reset is asserted:
   always @(posedge internal_clock) begin
