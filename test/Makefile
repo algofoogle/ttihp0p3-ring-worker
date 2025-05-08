@@ -6,7 +6,6 @@ SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
 PROJECT_SOURCES = \
-	test_stdcell_shim.v \
 	project.v
 
 ifneq ($(GATES),yes)
@@ -14,6 +13,9 @@ ifneq ($(GATES),yes)
 # RTL simulation:
 SIM_BUILD				= sim_build/rtl
 VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
+#NOTE: The following is just used to keep the RTL test happy
+# when project.v instantiates IHP standard cells directly:
+VERILOG_SOURCES += $(PWD)/test_stdcell_shim.v
 
 else
 
